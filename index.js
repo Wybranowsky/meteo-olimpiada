@@ -19,11 +19,11 @@ const db = new sqlite3.Database('./meteo_database.db', (err) => {
     } else {
         db.run('CREATE TABLE outsideSensor( \
             result_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
-            humadity NVARCHAR(10) NOT NULL,\
-            pressure NVARCHAR(10) NOT NULL,\
-            temperature NVARCHAR(10) NOT NULL,\
-            result_time NVARCHAR(20) NOT NULL,\
-            voltage NVARCHAR(10) NOT NULL\ )', (err) => {
+            humadity DOUBLE NOT NULL,\
+            pressure DOUBLE NOT NULL,\
+            temperature DOUBLE NOT NULL,\
+            result_time INTEGER NOT NULL,\
+            voltage DOUBLE NOT NULL\ )', (err) => {
             if (err) {
                 console.log("Baza danych już istnieje 👍");
             }
@@ -58,11 +58,11 @@ app.get("/api/outside/:param", (req, res, next) => {
 
 });
 
-app.post("/api/outside", (req, res, next) => {
-    var reqBody = req.body;
-    console.log(reqBody)
+app.get('/api/outside_post', (req, res) => {
+    let query = req.query;
+    let timestamp = Math.floor(Date.now() / 1000);
     db.run("INSERT INTO outsideSensor (humadity, pressure, temperature, result_time, voltage) VALUES (?,?,?,?,?)",
-        [reqBody.humadity, reqBody.pressure, reqBody.temperature, reqBody.result_time, reqBody.voltage],
+        [query.hum, query.pres, query.temp, timestamp, query.vcc],
         function (err, result) {
             if (err) {
                 res.status(400).json({ "error": err.message })
@@ -71,7 +71,13 @@ app.post("/api/outside", (req, res, next) => {
             res.status(201).json({
                 "result_id": this.lastID
             })
+            console.log(req.query)
         });
+});
+
+app.get('/api/sys_info_post', (req, res) => {
+    console.log(req.query)
+    res.send('OK');
 });
 
 app.delete("/api/outside/:id", (req, res, next) => {
