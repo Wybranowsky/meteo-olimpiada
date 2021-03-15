@@ -1,4 +1,11 @@
+@font-face {
+    font-family: 'Roboto';
+    src: url('roboto/Roboto-Regular.ttf')  format('truetype'); /* Safari, Android, iOS */
+}
 
+body{
+    font-family: 'Roboto';
+}
 .order-card {
     color: #fff;
 }
